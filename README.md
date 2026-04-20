@@ -1,0 +1,2 @@
+# Nigeria-Agricultural-Export-Analytics-Strategic-BI-Market-Intelligence
+A Power BI project analyzing Nigeria’s agricultural exports to 10 European markets over 4 years. Built on a relational star schema, it tracks revenue, profit, and port logistics.  Features advanced DAX for YoY growth and dynamic filtering. Designed to transform raw trade data into actionable, stakeholder-ready commercial intelligence.
