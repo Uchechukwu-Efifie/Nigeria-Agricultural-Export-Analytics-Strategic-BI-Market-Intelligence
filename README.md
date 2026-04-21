@@ -92,7 +92,7 @@ Air · Sea (as captured in `exports_detailed[Transportation_Mode]`)
 
 The data model follows a **star schema** design with `exports_basic` as the central fact table connecting to three dimension tables and one detail table.
 
-![Data Model](Images/Data%20model.jpeg)
+![Data Model](Images/Data_model.jpg)
 
 > *The Power BI model view showing all five tables and their relationships.*
 
@@ -292,7 +292,7 @@ These label measures combine a Unicode directional arrow with a formatted percen
 
 The dashboard is designed as a **single-page, fully interactive** analytical tool. All visuals respond to the three slicers simultaneously — allowing any combination of Export Country, Year, and Quarter to be applied across the entire dashboard at once.
 
-![Dashboard — Full View](screenshots/dashboard_full.png)
+![Dashboard — Full View](Images/PowerBI%20report.jpeg)
 
 ### Filter Panel (left sidebar)
 
