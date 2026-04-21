@@ -319,7 +319,7 @@ These label measures combine a Unicode directional arrow with a formatted percen
 
 The dashboard is designed as a **fully interactive** analytical tool. All visuals respond to the three slicers simultaneously, allowing any combination of Export Country, Year, and Quarter to be applied across the entire dashboard at once.
 
-![Dashboard — Edit View](Images/PowerBI_report2.jpg)
+![Dashboard — Edit View](Images/PowerBI_report2.png)
 
 ### Filter Panel (left sidebar)
 
