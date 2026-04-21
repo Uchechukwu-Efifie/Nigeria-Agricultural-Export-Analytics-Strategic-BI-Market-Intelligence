@@ -1,7 +1,7 @@
 # Nigeria Agricultural Export Analytics Dashboard
-**Single-Page Interactive Business Intelligence Dashboard — Microsoft Power BI**
+**Interactive Business Intelligence Dashboard — Microsoft Power BI**
 
-> An end-to-end data analytics project analysing Nigeria's agricultural export trade across 10 European markets over a 4-year period. Built on a relational data model spanning four tables, the dashboard delivers actionable commercial intelligence on revenue performance, profitability, product mix, port logistics, and year-on-year growth trends — with dynamic filtering across countries, years, and quarters. Designed to demonstrate production-grade Power BI development skills including advanced DAX time-intelligence, custom data modelling, and stakeholder-ready visual design.
+> An end-to-end data analytics project analysing Nigeria's agricultural export trade across 10 European markets over a 4-year period. Built on a relational data model spanning four tables, the dashboard delivers actionable commercial intelligence on revenue performance, profitability, product mix, port logistics, and year-on-year growth trends, with dynamic filtering across countries, years, and quarters. Designed to demonstrate production-grade Power BI development skills including advanced DAX time-intelligence, custom data modelling, and stakeholder-ready visual design.
 
 ---
 
@@ -25,7 +25,7 @@
 
 ## 1. Project Overview
 
-Nigeria is Africa's largest economy and a significant player in global agricultural commodity trade. Despite the scale of its exports — spanning cashew, cocoa, palm oil, sesame, ginger, cassava, rubber, and plantain — export performance data is rarely presented in a form that enables commercial decision-making at the product, destination, or logistics level.
+Nigeria is Africa's largest economy and a significant player in global agricultural commodity trade. Despite the scale of its exports, spanning cashew, cocoa, palm oil, sesame, ginger, cassava, rubber, and plantain, export performance data is rarely presented in a form that enables commercial decision-making at the product, destination, or logistics level.
 
 This project addresses that gap by building a comprehensive, single-page Power BI dashboard that transforms raw transactional export data into a decision-ready commercial intelligence tool. The dashboard enables export managers, trade analysts, and business leadership to monitor revenue and profit performance, benchmark products against each other, identify high-value export destinations, and track growth or decline across time periods — all with dynamic, slicer-driven interactivity.
 
@@ -43,7 +43,7 @@ This project addresses that gap by building a comprehensive, single-page Power B
 
 ## 2. Business Problem
 
-Nigerian agricultural export businesses generate large volumes of transactional data — across multiple products, companies, shipping routes, and destination markets — but without a centralised analytical layer, key commercial questions remain unanswered:
+Nigerian agricultural export businesses generate large volumes of transactional data across multiple products, companies, shipping routes, and destination markets, but without a centralised analytical layer, key commercial questions remain unanswered:
 
 - Which products generate the most revenue and profit, and which are high-volume but low-margin?
 - Which export destinations and ports are driving the most trade value?
@@ -51,7 +51,7 @@ Nigerian agricultural export businesses generate large volumes of transactional 
 - How does performance in the current period compare to the same period in prior years?
 - Which companies are the top performers, and what is their product mix?
 
-Without answers to these questions, export strategy decisions — on pricing, product focus, destination prioritisation, and logistics — rely on intuition rather than evidence. This dashboard provides the analytical foundation to answer all of these questions dynamically, with filters that allow any stakeholder to slice the data by country, year, quarter, or product combination.
+Without answers to these questions, export strategy decisions, on pricing, product focus, destination prioritisation, and logistics, rely on intuition rather than evidence. This dashboard provides the analytical foundation to answer all of these questions dynamically, with filters that allow any stakeholder to slice the data by country, year, quarter, or product combination.
 
 ---
 
@@ -84,19 +84,19 @@ Lagos · Calabar · Warri · Port Harcourt
 
 ### Transportation Modes
 
-Air · Sea (as captured in `exports_detailed[Transportation_Mode]`)
+Sea (as captured in `exports_detailed[Transportation_Mode]`)
 
 ---
 
 ## 4. Data Model & Relationships
 
-The data model follows a **star schema** design with `exports_basic` as the central fact table connecting to three dimension tables and one detail table.
+The data model follows a **star schema** design with `exports_basic` as the central fact table connecting to three dimension tables and one detail table utilizing relevant primary keys.
 
 ![Data Model](Images/Data_model.jpg)
 
 > *The Power BI model view showing all five tables and their relationships.*
 
-| Relationship | Type | Direction |
+| Relationship/Primary Key | Type | Direction |
 |---|---|---|
 | `Calendar[Date]` → `exports_basic[Date]` | One-to-many | Single (Calendar filters facts) |
 | `exports_basic[ExportID]` → `exports_detailed[ExportID]` | One-to-one | Single |
@@ -199,6 +199,11 @@ Total Profit Inception =
     )
 ```
 
+```dax
+Period Unit Solsd = 
+    CALCULATE(SUM('exports_detailed 1'[Units_Sold]),KEEPFILTERS('Calendar'))
+```
+
 ### Year-on-year comparisons
 
 ```dax
@@ -230,6 +235,21 @@ Profit YoY % =
     VAR _Current  = [Total Profit Measure]
     VAR _Previous = [Profit Previous Year]
     RETURN DIVIDE(_Current - _Previous, _Previous, 0)
+```
+
+```dax
+Units sold previous year =
+     CALCULATE(
+         SUM('exports_detailed 1'[Units_Sold]),
+         SAMEPERIODLASTYEAR('Calendar'[Date]),
+         REMOVEFILTERS('Calendar'))
+```
+
+```dax
+Unit Sold YoY % = 
+VAR _current = 'exports_detailed 1'[Period Unit Solsd]
+VAR _Previous = 'exports_detailed 1'[Units sold previous year]
+RETURN DIVIDE(_current - _Previous, _Previous)
 ```
 
 ### Month-on-month comparisons
@@ -284,25 +304,32 @@ Profit YoY Label =
     RETURN _arrow & FORMAT(_growth, "0.0%")
 ```
 
+```dax
+Unit sold YoY Label = 
+    VAR _growth_unit_sold = [Unit Sold YoY %]
+    VAR _arrow_unit_sold = IF(_growth_unit_sold < 0, "▼ ", "▲ ")
+    RETURN _arrow_unit_sold & FORMAT(_growth_unit_sold, "0.0%")
+```
+
 These label measures combine a Unicode directional arrow with a formatted percentage — producing the dynamic badge text seen in the KPI cards on the dashboard.
 
 ---
 
 ## 7. Dashboard — Visual Walkthrough
 
-The dashboard is designed as a **single-page, fully interactive** analytical tool. All visuals respond to the three slicers simultaneously — allowing any combination of Export Country, Year, and Quarter to be applied across the entire dashboard at once.
+The dashboard is designed as a **fully interactive** analytical tool. All visuals respond to the three slicers simultaneously, allowing any combination of Export Country, Year, and Quarter to be applied across the entire dashboard at once.
 
-![Dashboard — Edit View](Images/PowerBI_report.jpg)
+![Dashboard — Edit View](Images/PowerBI_report2.jpg)
 
 ### Filter Panel (left sidebar)
 
 Three stacked slicers control all visuals on the page:
 
-- **Export Country** — multi-select from: Austria, Belgium, Denmark, France, Germany, Italy, Netherlands, Spain, Sweden, Switzerland
+- **Export Country** — single-select from: Austria, Belgium, Denmark, France, Germany, Italy, Netherlands, Spain, Sweden, Switzerland
 - **Year** — single or multi-select across the 4-year dataset period
 - **Quarter** — Q1, Q2, Q3, Q4
 
-The navigation buttons at the top of the sidebar (Home) and bottom allow movement between report sections if the dashboard is extended in future.
+The navigation buttons at the top of the sidebar (Clear all slicers) and effectively removes all filters from all charts.
 
 ---
 
@@ -364,25 +391,28 @@ This table provides row-level transactional visibility — filtered by whatever 
 **Visual type:** Clustered column chart
 **Fields:** Quarter\_Year (axis) × Total\_Sales (values) × ProductName (legend)
 
-This chart combines temporal and product dimensions — showing how each product's contribution to total sales evolved across quarters. It surfaces seasonal patterns, quarter-specific demand spikes, and whether revenue growth is broad-based across products or driven by one commodity.
+This chart combines temporal and product dimensions, showing how each product's contribution to total sales evolved across quarters. It surfaces seasonal patterns, quarter-specific demand spikes, and whether revenue growth is broad-based across products or driven by one commodity.
 
 ---
 
 ## 8. Key Findings & Insights
 
-The following insights are based on analysis of the full 4-year dataset. Specific values update dynamically when filters are applied.
+The following insights are based on analysis of the dashboard with Belgium and 2023 selected
 
-1. **Profit and volume are not perfectly correlated across products.** The profit bar chart reveals that some high-volume products (visible in the units donut) contribute a disproportionately smaller share of profit — indicating lower unit margins. Conversely, some lower-volume commodities deliver stronger profitability per unit, suggesting premium pricing power.
+1. **Performance Divergence (Sales vs. Profit).**
+- Revenue Decline but Profit Growth: While Total Sales are down 5.6% ($357.0M), Total Profit has grown by 9.5% ($79.8M). This suggests a successful shift toward higher-margin products or improved operational efficiency despite lower overall volumes.
+- Profit Leaders: Sesame ($17.35M) and Cashew ($16.94M) are the primary profit drivers, outperforming other high-volume commodities like Palm Oil.
 
-2. **Port concentration creates logistical risk.** The Sales by Port donut shows that the majority of export value is processed through one or two dominant ports. This concentration represents both an operational dependency and an opportunity — diversifying port usage could reduce bottleneck risk and potentially lower logistics costs.
+2. **Logistical Concentration Risk.**
+- Port Dominance: The Lagos port handles a staggering 72.8% ($259.79M) of all export value.
+- Underutilized Channels: Port Harcourt, Warri, and Calabar combined handle less than 30% of total sales, representing a significant bottleneck risk if Lagos faces industrial or logistical delays.
 
-3. **Year-on-year performance is measurable and directional.** The YoY badge measures on the KPI cards provide clear directional signals for each metric. Where the badge shows a decline (▼), the sparklines on the same card reveal whether the decline is a recent trend or a sustained deterioration — enabling more nuanced interpretation than a single percentage.
+3. **Market & Product Composition.**
+- Volume Mix: Cashew and Sesame dominate the units sold, accounting for 24.9% and 21.2% of total volume respectively.
+- Seasonal Volatility: The Total Sales per Quarter chart shows a distinct downward trend as the year progresses, with Q1 consistently being the strongest performing quarter across most product lines.
 
-4. **Quarterly seasonality is visible in the column chart.** The Sales by Product and Quarter chart reveals quarter-specific patterns — some products consistently peak in Q2 or Q3, suggesting demand cycles aligned with harvest seasons or European procurement calendars. This insight directly informs export scheduling decisions.
-
-5. **Company-level performance is trackable.** The transaction table, filtered by CompanyName, reveals which exporters are driving the most volume and value — and whether their product mix is diversified or concentrated on a single commodity.
-
-6. **Belgium shows the highest individual-country focus** in the dataset (visible when the Country slicer is applied), but the relative performance of each market changes significantly by product — confirming that destination-country analysis must always be conducted at the product level to be actionable.
+4. **Exporter Benchmarking.**
+- Top Performer: Agro Export Nigeria Ltd is the leading company by total profit ($28.29M) and sales ($0.12bn), indicating a dominant market share compared to peers like Solid Agro Nigeria Limited.
 
 ---
 
@@ -390,20 +420,17 @@ The following insights are based on analysis of the full 4-year dataset. Specifi
 
 Based on the analytical findings from the dashboard:
 
-**1. Prioritise high-margin products in export planning**
-Identify the 2–3 products with the highest profit-per-unit and ensure they receive preferential allocation of shipping capacity, premium packaging investment, and dedicated buyer relationship management.
+**1. Optimize Product Portfolio:**
+Increase shipping priority and marketing spend for Sesame and Cashew. Their high profitability relative to other commodities makes them the most valuable assets for capital reinvestment.
 
-**2. Develop a port diversification strategy**
-Conduct a logistics cost analysis comparing all four ports (Lagos, Calabar, Warri, Port Harcourt) against destination country shipping lanes. Routing certain products through currently underutilised ports may reduce dwell time and cut freight costs.
+**2. Implement Port Diversification:**
+Actively re-route a percentage of non-time-sensitive commodities to Port Harcourt or Warri. Reducing the 72.8% dependency on Lagos will mitigate risks and potentially lower warehousing costs at congested hubs.
 
-**3. Align export schedules with seasonal demand peaks**
-Use the quarterly trend chart to identify peak demand quarters per product. Pre-position inventory and confirm buyer contracts in the quarter preceding each identified peak to maximise capture of seasonal price premiums.
+**3. Address Year-End Revenue Slump:**
+Investigate the root causes of the Q4 sales dip. If this is due to harvest cycles, develop value-added processed versions of products (e.g., roasted cashews or refined palm oil) to maintain export value during off-peak raw material months.
 
-**4. Benchmark underperforming companies against top exporters**
-Use the transaction table filtered by CompanyName to compare unit prices achieved by different companies for the same product. Companies consistently achieving higher unit prices on equivalent volumes should be studied for best practice replication.
-
-**5. Implement quarterly performance reviews using this dashboard**
-The YoY and MoM comparison measures are designed for regular review cadences. Scheduling quarterly commercial reviews using this dashboard — with the Quarter slicer set to the current quarter — creates a consistent performance management rhythm with objective, data-driven benchmarks.
+**4. Stakeholder Training:**
+Use the Company Name table to identify best practices from top-tier exporters like Agro Export Nigeria Ltd. Mentoring smaller exporters on logistics and pricing strategies could raise the overall national profit margin.
 
 ---
 
@@ -511,7 +538,7 @@ Cross-validated KPI card totals against raw source data aggregations. Confirmed 
 
 ### Current Limitations
 
-- **Single-page scope** — the current dashboard covers the core commercial metrics on one page; a production deployment would benefit from additional pages for company-level deep dive, port logistics analysis, and product-specific trend pages
+- **Single-page scope** — the current dashboard covers the core commercial metrics on one page; a production deployment would benefit from additional pages for company-level deep dive and product-specific trend pages
 - **No forecasting** — the dashboard is descriptive and diagnostic; it does not include predictive models or export volume forecasts
 - **Static dataset** — the dashboard uses a fixed historical dataset; a live deployment would connect to an ERP or trade database via a scheduled refresh
 - **No geospatial layer** — destination country performance is not visualised on a map, which would add geographic context to the market analysis
@@ -519,11 +546,9 @@ Cross-validated KPI card totals against raw source data aggregations. Confirmed 
 ### Future Enhancements
 
 - [ ] Add a **dedicated company performance page** — revenue, profit, and product mix per exporter with peer benchmarking
-- [ ] Build a **port logistics analysis page** — transit times, transportation mode split, and cost-per-unit by port
 - [ ] Integrate **forecasting** using Power BI's built-in Analytics pane forecast or an R/Python visual
 - [ ] Add a **geospatial map visual** — choropleth of destination countries by export value
 - [ ] Connect to a **live data source** (SQL Server or SharePoint) with scheduled refresh for real-time monitoring
-- [ ] Add **drill-through pages** so clicking a product on the donut chart navigates to a product-specific detail view
 
 ---
 
