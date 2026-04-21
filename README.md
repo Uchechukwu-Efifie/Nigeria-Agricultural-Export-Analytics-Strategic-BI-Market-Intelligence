@@ -92,7 +92,7 @@ Air · Sea (as captured in `exports_detailed[Transportation_Mode]`)
 
 The data model follows a **star schema** design with `exports_basic` as the central fact table connecting to three dimension tables and one detail table.
 
-![Data Model](Images/Data model.png)
+![Data Model](Images/Data%20model.jpeg)
 
 > *The Power BI model view showing all five tables and their relationships.*
 
